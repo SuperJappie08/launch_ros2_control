@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import actions
-from . import descriptions
+"""Actions module."""
 
-__all__ = [
-    'actions',
-    'descriptions',
-]
+from .controller_spawner import ControllerSpawner
+
+__all__ = ['ControllerSpawner']

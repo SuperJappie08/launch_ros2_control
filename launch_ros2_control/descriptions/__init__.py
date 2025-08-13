@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import actions
-from . import descriptions
+from .controller import Controller
 
 __all__ = [
-    'actions',
-    'descriptions',
+    'Controller'
 ]

@@ -3,13 +3,13 @@
 <package format="3">
   <name>launch_ros2_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="36795178+SuperJappie08@users.noreply.github.com">jap</maintainer>
+  <description>A launch extension for ros2_control</description>
+  <maintainer email="36795178+SuperJappie08@users.noreply.github.com">Jasper van Brakel</maintainer>
   <license>Apache-2.0</license>
 
-  <depend>launch_ros</depend>
-  <depend>launch</depend>
-  <depend>controller_manager</depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

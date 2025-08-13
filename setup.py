@@ -13,13 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='jap',
+    maintainer='Jasper van Brakel',
     maintainer_email='36795178+SuperJappie08@users.noreply.github.com',
-    description='TODO: Package description',
+    description='A launch extension for ros2_control',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
+        'launch.frontend.launch_extension': [
+            'launch_ros2_control = launch_ros2_control',
         ],
     },
 )
