@@ -107,18 +107,24 @@ class SpawnControllers(Action):
                     assert param_file_path.is_file()
                     extra_params.append(ParameterFile(param_file_path))
 
+        # Parse global remaps
+        global_remaps = context.launch_configurations.get('ros_remaps', None)
+        extra_remaps = []
+
+        if global_remaps is not None:
+            extra_remaps += global_remaps
+
         for controller in self.__controller_descriptions:
             if controller.condition is not None and not controller.condition.evaluate(context):
                 continue
 
             controllers.append(controller.controller_name)
 
-            if controller.parameters or extra_params:
-                combined_parameters = extra_params.copy()
+            combined_parameters = extra_params.copy()
+            if controller.parameters:
+                combined_parameters += controller.parameters
 
-                if controller.parameters:
-                    combined_parameters += controller.parameters
-
+            if combined_parameters:
                 evaluated_parameters = evaluate_parameters(context, combined_parameters)
 
                 # Load normally for dict and path/file, since no combined file needs to be made
@@ -152,17 +158,21 @@ class SpawnControllers(Action):
                         continue
                     other_arguments += ['-p', params_argument]
 
+            combined_remappings = extra_remaps.copy()
             if controller.remappings:
-                for from_topic, to_topic in controller.remappings:
+                combined_remappings += list(controller.remappings)
+
+            if combined_remappings:
+                for src, dst in combined_remappings:
                     other_arguments += [
                         '--controller-ros-args',
                         itertools.chain.from_iterable((
                             '-r ',
                             controller.controller_name,
                             ':',
-                            from_topic,
+                            src,
                             ':=',
-                            to_topic,
+                            dst,
                         )),
                     ]
 
