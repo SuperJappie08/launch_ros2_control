@@ -15,6 +15,7 @@
 """Module for the controller_spawner action."""
 
 # import pathlib
+import itertools
 from typing import List, Optional
 
 from launch.action import Action
@@ -22,8 +23,6 @@ from launch.frontend import Entity, expose_action, Parser
 from launch.launch_context import LaunchContext
 from launch.some_substitutions_type import SomeSubstitutionsType
 from launch_ros.actions import Node
-from launch_ros.remap_rule_type import SomeRemapRules
-from launch_ros.utilities import normalize_remap_rules
 
 from ..descriptions import Controller
 
@@ -37,7 +36,7 @@ class ControllerSpawner(Action):
         controller_descriptions: List[Controller],
         spawner_name: Optional[SomeSubstitutionsType] = None,
         controller_manager: Optional[SomeSubstitutionsType] = None,
-        controller_remappings: Optional[SomeRemapRules] = None,
+        # controller_remappings: Optional[SomeRemapRules] = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -45,10 +44,6 @@ class ControllerSpawner(Action):
         self.__controller_descriptions = controller_descriptions
         self.__spawner_name = spawner_name
         self.__controller_manager = controller_manager
-
-        self.__controller_remappings = None
-        if controller_remappings:
-            self.__controller_remappings = normalize_remap_rules(controller_remappings)
 
     @classmethod
     def parse(cls, entity: Entity, parser: Parser):
@@ -79,15 +74,19 @@ class ControllerSpawner(Action):
         """Execute the action."""
         launch_descriptions: List[Action] = []
 
-        arguments: List[SomeSubstitutionsType] = []
+        controllers: List[SomeSubstitutionsType] = []
+        other_arguments: List[SomeSubstitutionsType] = []
 
         if self.__controller_manager is not None:
-            arguments += ['--controller-manager', self.__controller_manager]
+            other_arguments += ['--controller-manager', self.__controller_manager]
 
         for controller in self.__controller_descriptions:
-            arguments.append(controller.controller_name)
+            if controller.condition is not None and not controller.condition.evaluate(context):
+                continue
 
-            # FIXME: NEEDS TO BE A FILE
+            controllers.append(controller.controller_name)
+
+            # FIXME: NEEDS TO BE A FILE --param works but cannot specify target
             # if controller.parameters:
             #     evaluated_parameters = evaluated_parameters(context,controller.parameters)
             #     for params in evaluated_parameters:
@@ -103,31 +102,24 @@ class ControllerSpawner(Action):
 
             if controller.remappings:
                 for from_topic, to_topic in controller.remappings:
-                    arguments += [
+                    other_arguments += [
                         '--controller-ros-args',
-                        [
+                        itertools.chain.from_iterable((
                             '-r ',
                             controller.controller_name,
                             ':',
                             from_topic,
                             ':=',
                             to_topic,
-                        ],
+                        )),
                     ]
-
-        if self.__controller_remappings:
-            for from_topic, to_topic in self.__controller_remappings:
-                arguments += [
-                    '--controller-ros-args',
-                    ['-r ', from_topic, ':=', to_topic],
-                ]
 
         launch_descriptions.append(
             Node(
                 package='controller_manager',
                 executable='spawner',
                 name=self.__spawner_name,
-                arguments=arguments,
+                arguments=controllers + other_arguments,
             )
         )
 

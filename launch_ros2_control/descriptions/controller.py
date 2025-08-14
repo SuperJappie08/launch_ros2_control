@@ -15,6 +15,8 @@
 from tempfile import NamedTemporaryFile
 from typing import List, Optional
 
+from launch.condition import Condition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.frontend import Entity, Parser
 from launch.some_substitutions_type import SomeSubstitutionsType
 from launch.substitution import Substitution
@@ -34,6 +36,7 @@ class Controller:
         name: SomeSubstitutionsType,
         parameters: Optional[SomeParameters] = None,
         remappings: Optional[SomeRemapRules] = None,
+        condition: Optional[Condition] = None
     ) -> None:
         self.__controller_name = normalize_to_list_of_substitutions(name)
 
@@ -45,6 +48,8 @@ class Controller:
         if remappings:
             self.__remappings = normalize_remap_rules(remappings)
 
+        self.__condition = condition
+
     @classmethod
     def parse(cls, parser: Parser, entity: Entity):
         """Parse controller."""
@@ -54,7 +59,20 @@ class Controller:
 
         kwargs['name'] = parser.parse_substitution(entity.get_attr('name'))
 
-        parameters = entity.get_attr('param', date_type=List[Entity], optional=True)
+        if_cond = entity.get_attr('if', optional=True)
+        unless_cond = entity.get_attr('unless', optional=True)
+        if if_cond is not None and unless_cond is not None:
+            raise RuntimeError("if and unless are conditions and can't be used simultaneously")
+        if if_cond is not None:
+            kwargs['condition'] = IfCondition(
+                predicate_expression=parser.parse_substitution(if_cond)
+            )
+        if unless_cond is not None:
+            kwargs['condition'] = UnlessCondition(
+                predicate_expression=parser.parse_substitution(unless_cond)
+            )
+
+        parameters = entity.get_attr('param', data_type=List[Entity], optional=True)
         if parameters is not None:
             kwargs['parameters'] = Node.parse_nested_parameters(parameters, parser)
 
@@ -88,6 +106,11 @@ class Controller:
     def remappings(self) -> Optional[RemapRules]:
         """Get the the controller remappings as a sequence of substitutions to be performed."""
         return self.__remappings
+
+    @property
+    def condition(self) -> Optional[Condition]:
+        """Getter for condition."""
+        return self.__condition
 
     def _create_params_file_from_dict(self, params):
         with NamedTemporaryFile(mode='w', prefix='launch_params_', delete=False) as h:
