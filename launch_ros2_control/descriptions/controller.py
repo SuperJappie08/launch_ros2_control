@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from tempfile import NamedTemporaryFile
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from launch.condition import Condition
 from launch.conditions import IfCondition, UnlessCondition
@@ -21,10 +21,14 @@ from launch.frontend import Entity, Parser
 from launch.some_substitutions_type import SomeSubstitutionsType
 from launch.substitution import Substitution
 from launch.utilities import normalize_to_list_of_substitutions
-from launch_ros.parameters_type import Parameters, SomeParameters
+from launch.utilities import perform_substitutions
+from launch_ros.parameters_type import Parameters, ParametersDict, SomeParameters
 from launch_ros.remap_rule_type import RemapRules, SomeRemapRules
 from launch_ros.utilities import normalize_parameters, normalize_remap_rules
 import yaml
+
+if TYPE_CHECKING:
+    from launch import LaunchContext
 
 
 class Controller:
@@ -38,6 +42,14 @@ class Controller:
         remappings: Optional[SomeRemapRules] = None,
         condition: Optional[Condition] = None
     ) -> None:
+        """
+        Initialize a ros2_control Controller description.
+
+        :param name: name of the controller
+        :param parameters: list of either paths to yaml files or dictionaries of parameters
+        :param remappings: list of from/to pairs for remapping names
+        :param condition: action will be executed if the condition evaluates to true
+        """
         self.__controller_name = normalize_to_list_of_substitutions(name)
 
         self.__parameters = None  # type: Optional[Parameters]
@@ -112,11 +124,11 @@ class Controller:
         """Getter for condition."""
         return self.__condition
 
-    def _create_params_file_from_dict(self, params):
-        with NamedTemporaryFile(mode='w', prefix='launch_params_', delete=False) as h:
+    def _create_params_file_from_dict(self, context: 'LaunchContext', params: ParametersDict):
+        with NamedTemporaryFile(mode='w', prefix='launch_params_controller_', delete=False) as h:
             param_file_path = h.name
             param_dict = {
-                f'/**/{self.controller_name}':
+                f'/**/{perform_substitutions(context, self.controller_name)}':
                 {'ros__parameters': params}
             }
             yaml.dump(param_dict, h, default_flow_style=False)

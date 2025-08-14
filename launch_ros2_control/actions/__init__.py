@@ -14,6 +14,6 @@
 
 """Actions module."""
 
-from .controller_spawner import ControllerSpawner
+from .spawn_controllers import SpawnControllers
 
-__all__ = ['ControllerSpawner']
+__all__ = ['SpawnControllers']

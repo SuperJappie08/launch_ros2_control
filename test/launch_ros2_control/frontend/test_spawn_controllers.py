@@ -20,20 +20,24 @@ from launch import LaunchService
 from launch.condition import Condition
 from launch.frontend import Parser
 from launch.utilities import perform_substitutions
+from launch_ros.utilities import evaluate_parameters
 import osrf_pycommon.process_utils
 
 
-def test_launch_controller_spawner_yaml():
+def test_launch_spawn_controllers_yaml():
     yaml_file = textwrap.dedent(
         r"""
         launch:
-            - controller_spawner:
+            - spawn_controller:
                 controller_manager: /my/controller_manager
                 controller:
                     -   name: my_controller
                         remap:
                             -   from: me
                                 to: /you
+                        param:
+                            - name: update_rate
+                              value: 9
                     -   name: second_controller
                         # Have to pass explicitly as str, since it is not using a substitution
                         if: 'True'
@@ -43,29 +47,30 @@ def test_launch_controller_spawner_yaml():
         """
     )
     with io.StringIO(yaml_file) as f:
-        check_launch_controller_spawner(f)
+        check_launch_spawn_controllers(f)
 
 
-def test_launch_controller_spawner_xml():
+def test_launch_spawn_controllers_xml():
     xml_file = textwrap.dedent(
         r"""
         <launch>
-            <controller_spawner controller_manager="/my/controller_manager">
+            <spawn_controller controller_manager="/my/controller_manager">
                 <controller name="my_controller">
                     <remap from="me" to="/you" />
+                    <param name="update_rate" value="9" />
                 </controller>
                 <controller name="second_controller" if="True">
                     <remap from="something" to="else" />
                 </controller>
-            </controller_spawner>
+            </spawn_controller>
         </launch>
-        """  # noqa: E501
+        """
     )
     with io.StringIO(xml_file) as f:
-        check_launch_controller_spawner(f)
+        check_launch_spawn_controllers(f)
 
 
-def check_launch_controller_spawner(file):
+def check_launch_spawn_controllers(file):
     root_entity, parser = Parser.load(file)
     ld = parser.parse_description(root_entity)
     ls = LaunchService()
@@ -75,27 +80,31 @@ def check_launch_controller_spawner(file):
     launch_task = loop.create_task(ls.run_async())
 
     controller_spawner, = ld.describe_sub_entities()
-    my_controller = controller_spawner._ControllerSpawner__controller_descriptions[0]
-    second_controller = controller_spawner._ControllerSpawner__controller_descriptions[1]
+    my_controller = controller_spawner._SpawnControllers__controller_descriptions[0]
+    second_controller = controller_spawner._SpawnControllers__controller_descriptions[1]
 
     def perform(substitution):
         return perform_substitutions(ls.context, substitution)
 
     # TODO: Check Controller Spawner params
     assert (
-        perform(controller_spawner._ControllerSpawner__controller_manager) ==
+        perform(controller_spawner._SpawnControllers__controller_manager) ==
         '/my/controller_manager'
     )
 
-    # Check Controller params
+    # Check Controller parameters
     my_controller_remappings = list(my_controller.remappings)
     second_controller_remappings = list(second_controller.remappings)
 
+    my_controller_parameters = evaluate_parameters(ls.context, my_controller.parameters)
+
     assert perform(my_controller.controller_name) == 'my_controller'
     assert my_controller.condition is None
+    assert len(my_controller_remappings) == 1
     assert (perform(my_controller_remappings[0][0]),
             perform(my_controller_remappings[0][1])) == ('me', '/you')
-    assert len(my_controller_remappings) == 1
+    assert len(my_controller_parameters) == 1
+    assert my_controller_parameters[0].get('update_rate') == 9
 
     assert perform(second_controller.controller_name) == 'second_controller'
     assert isinstance(second_controller.condition, Condition)
