@@ -45,10 +45,10 @@ class Controller:
         """
         Initialize a ros2_control Controller description.
 
-        :param name: name of the controller
-        :param parameters: list of either paths to yaml files or dictionaries of parameters
-        :param remappings: list of from/to pairs for remapping names
-        :param condition: action will be executed if the condition evaluates to true
+        :param: name the controller name
+        :param: parameters list of either paths to yaml files or dictionaries of parameters
+        :param: remappings list of from/to pairs for remapping names
+        :param: condition action will be executed if the condition evaluates to true
         """
         self.__controller_name = normalize_to_list_of_substitutions(name)
 
@@ -71,18 +71,18 @@ class Controller:
 
         kwargs['name'] = parser.parse_substitution(entity.get_attr('name'))
 
-        if_cond = entity.get_attr('if', optional=True)
-        unless_cond = entity.get_attr('unless', optional=True)
+        if_cond = entity.get_attr('if', data_type=bool, optional=True)
+        unless_cond = entity.get_attr('unless', data_type=bool, optional=True)
         if if_cond is not None and unless_cond is not None:
             raise RuntimeError("if and unless are conditions and can't be used simultaneously")
         if if_cond is not None:
+            value = parser.parse_if_substitutions(if_cond)
             kwargs['condition'] = IfCondition(
-                predicate_expression=parser.parse_substitution(if_cond)
-            )
+                predicate_expression=str(value) if isinstance(value, bool) else value)
         if unless_cond is not None:
+            value = parser.parse_if_substitutions(unless_cond)
             kwargs['condition'] = UnlessCondition(
-                predicate_expression=parser.parse_substitution(unless_cond)
-            )
+                predicate_expression=str(value) if isinstance(value, bool) else value)
 
         parameters = entity.get_attr('param', data_type=List[Entity], optional=True)
         if parameters is not None:

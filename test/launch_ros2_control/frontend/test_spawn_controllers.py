@@ -30,6 +30,11 @@ def test_launch_spawn_controllers_yaml():
         launch:
             - spawn_controller:
                 controller_manager: /my/controller_manager
+                unload_on_kill: true
+                activate_as_group: true
+                controller_manager_timeout: 9.
+                switch_timeout: 10.
+                service_call_timeout: 10.
                 controller:
                     -   name: my_controller
                         remap:
@@ -39,8 +44,7 @@ def test_launch_spawn_controllers_yaml():
                             - name: update_rate
                               value: 9
                     -   name: second_controller
-                        # Have to pass explicitly as str, since it is not using a substitution
-                        if: 'True'
+                        if: True
                         remap:
                             -   from: something
                                 to: else
@@ -54,7 +58,8 @@ def test_launch_spawn_controllers_xml():
     xml_file = textwrap.dedent(
         r"""
         <launch>
-            <spawn_controller controller_manager="/my/controller_manager">
+            <spawn_controller controller_manager="/my/controller_manager" unload_on_kill="True"
+                activate_as_group="true" controller_manager_timeout="9" switch_timeout="10" service_call_timeout="10">
                 <controller name="my_controller">
                     <remap from="me" to="/you" />
                     <param name="update_rate" value="9" />
@@ -64,7 +69,7 @@ def test_launch_spawn_controllers_xml():
                 </controller>
             </spawn_controller>
         </launch>
-        """
+        """  # noqa: E501
     )
     with io.StringIO(xml_file) as f:
         check_launch_spawn_controllers(f)
@@ -86,11 +91,23 @@ def check_launch_spawn_controllers(file):
     def perform(substitution):
         return perform_substitutions(ls.context, substitution)
 
+    def perform_if(substitution, data_type):
+        if isinstance(substitution, data_type):
+            return substitution
+        return perform(substitution)
+
     # TODO: Check Controller Spawner params
-    assert (
-        perform(controller_spawner._SpawnControllers__controller_manager) ==
-        '/my/controller_manager'
-    )
+    assert perform(
+        controller_spawner._SpawnControllers__controller_manager
+    ) == '/my/controller_manager'
+
+    assert perform_if(controller_spawner._SpawnControllers__unload_on_kill, bool)
+    assert perform_if(controller_spawner._SpawnControllers__activate_as_group, bool)
+
+    assert perform_if(
+        controller_spawner._SpawnControllers__controller_manager_timeout, float) == 9.
+    assert perform_if(controller_spawner._SpawnControllers__switch_timeout, float) == 10.
+    assert perform_if(controller_spawner._SpawnControllers__service_call_timeout, float) == 10.
 
     # Check Controller parameters
     my_controller_remappings = list(my_controller.remappings)
