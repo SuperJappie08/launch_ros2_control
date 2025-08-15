@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
 from ..descriptions import Controller
 
+FloatSubstitution = Union[List[Substitution], float]
 # TODO: Possibly add Controller or Node as subelement when printing
 
 
@@ -111,18 +112,20 @@ class SpawnControllers(Action):
 
         self.__activate_as_group = normalize_typed_substitution(activate_as_group, bool)
 
-        self.__controller_manager_timeout: 'Optional[Union[float, List[Substitution]]]' = None
+        self.__controller_manager_timeout: 'Optional[FloatSubstitution]' = None
         if controller_manager_timeout is not None:
-            self.__controller_manager_timeout = normalize_typed_substitution(
-                controller_manager_timeout, float)
+            self.__controller_manager_timeout = cast(
+                FloatSubstitution, normalize_typed_substitution(controller_manager_timeout, float))
 
-        self.__switch_timeout = None  # type: Optional[Union[float, List[Substitution]]]
+        self.__switch_timeout = None  # type: Optional[FloatSubstitution]
         if switch_timeout is not None:
-            self.__switch_timeout = normalize_typed_substitution(switch_timeout, float)
+            self.__switch_timeout = cast(
+                FloatSubstitution, normalize_typed_substitution(switch_timeout, float))
 
-        self.__service_call_timeout = None  # type: Optional[Union[float, List[Substitution]]]
+        self.__service_call_timeout = None  # type: Optional[FloatSubstitution]
         if service_call_timeout is not None:
-            self.__service_call_timeout = normalize_typed_substitution(service_call_timeout, float)
+            self.__service_call_timeout = cast(
+                FloatSubstitution, normalize_typed_substitution(service_call_timeout, float))
 
         self.__emulate_tty = normalize_typed_substitution(emulate_tty, bool)
         self.__output = output

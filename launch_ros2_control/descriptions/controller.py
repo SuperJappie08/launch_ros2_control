@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from tempfile import NamedTemporaryFile
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Optional, TYPE_CHECKING, Union
 
 from launch.condition import Condition
 from launch.conditions import IfCondition, UnlessCondition
@@ -29,6 +29,8 @@ import yaml
 
 if TYPE_CHECKING:
     from launch import LaunchContext
+
+BoolSubstitution = Union[List[Substitution], bool]
 
 
 class Controller:
@@ -67,7 +69,7 @@ class Controller:
         """Parse controller."""
         from launch_ros.actions import Node
 
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
 
         kwargs['name'] = parser.parse_substitution(entity.get_attr('name'))
 
@@ -76,13 +78,11 @@ class Controller:
         if if_cond is not None and unless_cond is not None:
             raise RuntimeError("if and unless are conditions and can't be used simultaneously")
         if if_cond is not None:
-            value = parser.parse_if_substitutions(if_cond)
-            kwargs['condition'] = IfCondition(
-                predicate_expression=str(value) if isinstance(value, bool) else value)
+            value = cast(BoolSubstitution, parser.parse_if_substitutions(if_cond))
+            kwargs['condition'] = IfCondition(str(value) if isinstance(value, bool) else value)
         if unless_cond is not None:
-            value = parser.parse_if_substitutions(unless_cond)
-            kwargs['condition'] = UnlessCondition(
-                predicate_expression=str(value) if isinstance(value, bool) else value)
+            value = cast(BoolSubstitution, parser.parse_if_substitutions(unless_cond))
+            kwargs['condition'] = UnlessCondition(str(value) if isinstance(value, bool) else value)
 
         parameters = entity.get_attr('param', data_type=List[Entity], optional=True)
         if parameters is not None:

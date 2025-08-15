@@ -2,6 +2,7 @@
 A launch extension for [ros2_control](control.ros.org).
 
 This packages provides a launch action for spawning contollers.
+It is compatible with Humble, Jazzy, Kilted and Rolling.
 
 Examples for the <i title="XML, YAML, and Python">3 major launch file types</i>, can be found in the [examples folder](examples/).
 
