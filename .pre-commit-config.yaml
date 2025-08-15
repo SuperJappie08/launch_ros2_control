@@ -1,0 +1,88 @@
+
+# To use:
+#
+#     pre-commit run -a
+#
+# Or:
+#
+#     pre-commit install  # (runs every time you commit in git)
+#
+# To update this file:
+#
+#     pre-commit autoupdate
+#
+# See https://github.com/pre-commit/pre-commit
+
+repos:
+  # Standard hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-xml
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+        exclude_types: [rst]
+      - id: fix-byte-order-marker
+
+
+  # Python hooks
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.20.0
+    hooks:
+    -   id: pyupgrade
+        args: [--py36-plus]
+
+  # flake8
+  - repo: local
+    hooks:
+      - id: ament_flake8
+        name: ament_flake8
+        description: Check if all files adhere to ament_flake8.
+        entry: ament_flake8
+        files: \.(py|pyi)$
+        language: system
+
+  # mypy
+  - repo: local
+    hooks:
+      - id: ament_mypy
+        name: ament_mypy
+        description: Check if all files adhere to ament_mypy.
+        entry: ament_mypy
+        args: ["--exclude", "diffbot.launch.py"]
+        pass_filenames: False
+        require_serial: True
+        files: \.(py|pyi)$
+        exclude: (^|\.launch\.py)$
+        language: system
+
+  # Copyright
+  - repo: local
+    hooks:
+      - id: ament_copyright
+        name: ament_copyright
+        description: Check if copyright notice is available in all files.
+        entry: ament_copyright
+        files: \.(c|cc|cpp|cxx|h|hh|hpp|hxx|cmake|py)$
+        exclude: ^(\.|_|(setup\.py|package\.xml)$)
+        language: system
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.33.2
+    hooks:
+      - id: check-github-workflows
+        args: ["--verbose"]
+      - id: check-github-actions
+        args: ["--verbose"]
+      - id: check-dependabot
+        args: ["--verbose"]

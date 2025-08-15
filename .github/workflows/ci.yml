@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   ament_lint:
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: rostooling/setup-ros-docker:ubuntu-${{ matrix.ubuntu }}-ros-${{ matrix.ros_distro }}-ros-base-latest
 
     strategy:

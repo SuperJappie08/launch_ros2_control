@@ -24,6 +24,7 @@ from launch.action import Action
 from launch.frontend import Entity, expose_action, Parser
 from launch.launch_context import LaunchContext
 from launch.some_substitutions_type import SomeSubstitutionsType
+from launch.substitution import Substitution
 from launch.utilities import normalize_to_list_of_substitutions
 from launch.utilities import perform_substitutions
 from launch.utilities.type_utils import normalize_typed_substitution
@@ -34,7 +35,6 @@ from launch_ros.utilities import evaluate_parameters
 from launch_ros.utilities.normalize_parameters import normalize_parameter_dict
 
 if TYPE_CHECKING:
-    from launch.substitution import Substitution
     from launch_ros.parameters_type import Parameters
 
 from ..descriptions import Controller
@@ -288,11 +288,11 @@ class SpawnControllers(Action):
                             context, {name: value})
                         assert os.path.isfile(params_argument)
                     else:
-                        raise RuntimeError('invalid normalized parameters {}'.format(repr(params)))
+                        raise RuntimeError(f'invalid normalized parameters {repr(params)}')
 
                     if not os.path.isfile(params_argument):
                         self.__logger.warning(
-                            'Parameter file path is not a file: {}'.format(params_argument))
+                            f'Parameter file path is not a file: {params_argument}')
                         continue
                     other_arguments += ['-p', params_argument]
 
