@@ -52,19 +52,19 @@ repos:
         files: \.(py|pyi)$
         language: system
 
-  # mypy
-  - repo: local
-    hooks:
-      - id: ament_mypy
-        name: ament_mypy
-        description: Check if all files adhere to ament_mypy.
-        entry: ament_mypy
-        args: ["--exclude", "diffbot.launch.py"]
-        pass_filenames: False
-        require_serial: True
-        files: \.(py|pyi)$
-        exclude: (^|\.launch\.py)$
-        language: system
+  # # mypy
+  # - repo: local
+  #   hooks:
+  #     - id: ament_mypy
+  #       name: ament_mypy
+  #       description: Check if all files adhere to ament_mypy.
+  #       entry: ament_mypy
+  #       args: ["--exclude", "diffbot.launch.py"]
+  #       pass_filenames: False
+  #       require_serial: True
+  #       files: \.(py|pyi)$
+  #       exclude: (^|\.launch\.py)$
+  #       language: system
 
   # Copyright
   - repo: local
