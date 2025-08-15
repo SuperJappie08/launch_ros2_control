@@ -299,7 +299,7 @@ class SpawnControllers(Action):
                     other_arguments += [
                         '--controller-ros-args',
                         itertools.chain.from_iterable((
-                            '-r ', controller.controller_name, ':', src, ' := ', dst,
+                            '-r ', controller.controller_name, ':', src, ':=', dst,
                         )),
                     ]
 

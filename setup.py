@@ -15,6 +15,8 @@ setup(
     zip_safe=True,
     maintainer='Jasper van Brakel',
     maintainer_email='36795178+SuperJappie08@users.noreply.github.com',
+    author='Jasper van Brakel',
+    author_email='36795178+SuperJappie08@users.noreply.github.com',
     description='A launch extension for ros2_control',
     license='Apache-2.0',
     tests_require=['pytest'],
