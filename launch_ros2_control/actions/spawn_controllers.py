@@ -29,14 +29,17 @@ from launch.utilities import perform_substitutions
 from launch.utilities.type_utils import normalize_typed_substitution
 from launch.utilities.type_utils import perform_typed_substitution
 from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import Parameter, ParameterFile, ParameterValue
+from launch_ros.parameter_descriptions import Parameter, ParameterFile
 from launch_ros.utilities import evaluate_parameters
 from launch_ros.utilities.normalize_parameters import normalize_parameter_dict
 
 if TYPE_CHECKING:
     from launch.substitution import Substitution
+    from launch_ros.parameters_type import Parameters
 
 from ..descriptions import Controller
+
+# TODO: Possibly add Controller or Node as subelement when printing
 
 
 @expose_action('spawn_controller')
@@ -44,8 +47,8 @@ from ..descriptions import Controller
 class SpawnControllers(Action):
     def __init__(
         self,
-        *,
         controller_descriptions: List[Controller],
+        *,
         spawner_name: Optional[SomeSubstitutionsType] = None,
         controller_manager: Optional[SomeSubstitutionsType] = None,
         # controller_remappings: Optional[SomeRemapRules] = None,
@@ -231,16 +234,18 @@ class SpawnControllers(Action):
 
         # Parse global params
         params_container = context.launch_configurations.get('global_params', None)
-        extra_params = []
+        extra_params: 'Optional[Parameters]' = None
 
         if params_container is not None:
-            for param in params_container:
+            def convert_param(param):
                 if isinstance(param, tuple):
-                    extra_params.append(normalize_parameter_dict({param[0]: param[1]}))
+                    return normalize_parameter_dict({param[0]: param[1]})
                 else:
                     param_file_path = Path(param).resolve()
                     assert param_file_path.is_file()
-                    extra_params.append(ParameterFile(param_file_path))
+                    return ParameterFile(param_file_path)
+
+            extra_params = list(map(convert_param, params_container))
 
         # Parse global remaps
         global_remaps = context.launch_configurations.get('ros_remaps', None)
@@ -255,7 +260,7 @@ class SpawnControllers(Action):
 
             controllers.append(controller.controller_name)
 
-            combined_parameters = extra_params.copy()
+            combined_parameters = list(extra_params) if extra_params is not None else []
             if controller.parameters:
                 combined_parameters += controller.parameters
 
@@ -275,11 +280,9 @@ class SpawnControllers(Action):
                         # NOTE: This only occurs, if somebody explicitly passes a Parameter object
                         # FIXME(SuperJappie08): This makes a lot of temporary files, could combine
                         #                       the values if present (and non-interrupted).
-                        params_dict = normalize_parameter_dict({
-                            params.name: ParameterValue(params.value, value_type=params.value_type)
-                        })
+                        name, value = params.evaluate(context)
                         params_argument = controller._create_params_file_from_dict(
-                            context, params_dict)
+                            context, {name: value})
                         assert os.path.isfile(params_argument)
                     else:
                         raise RuntimeError('invalid normalized parameters {}'.format(repr(params)))

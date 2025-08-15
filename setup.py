@@ -5,7 +5,7 @@ package_name = 'launch_ros2_control'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=find_packages(exclude=['test']),
+    packages=find_packages(exclude=['test', 'examples']),
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),

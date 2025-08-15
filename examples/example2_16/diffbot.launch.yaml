@@ -20,7 +20,7 @@ launch:
       description: Fixed frame id of the robot.
   - arg:
       name: use_pid
-      description: If true the PID controller for the wheels get's configured
+      description: If true the PID controller for the wheels get's configured.
 
   - let:
       name: robot_description_content

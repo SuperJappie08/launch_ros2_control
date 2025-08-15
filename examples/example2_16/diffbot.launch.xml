@@ -13,7 +13,7 @@
     description="Start robot with mock hardware mirroring command to its states." />
   <arg name="fixed_frame_id" default="odom"
     description="Fixed frame id of the robot." />
-  <arg name="use_pid" description="If true the PID controller for the wheels get's configured" />
+  <arg name="use_pid" description="If true the PID controller for the wheels get's configured." />
 
   <let name="robot_description_content"
     value="
