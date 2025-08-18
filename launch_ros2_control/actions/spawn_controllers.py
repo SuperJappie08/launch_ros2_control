@@ -209,7 +209,7 @@ class SpawnControllers(Action):
             other_arguments.append('--load-only')
         elif final_controller_state != 'active':
             raise ValueError(
-                "invalid final controller state recieved '{}' "
+                "invalid final controller state received '{}' "
                 "[Expected one of ('active', 'inactive', 'unconfigured')]"
                 .format(final_controller_state))
 
@@ -271,7 +271,7 @@ class SpawnControllers(Action):
                 evaluated_parameters = evaluate_parameters(context, combined_parameters)
 
                 # Load normally for dict and path/file, since no combined file needs to be made
-                # TODO(SuperJappie08): It would be nice to combine continues sections of Paramaters
+                # TODO(SuperJappie08): It would be nice to combine continues sections of Parameters
                 #                      into a single file, since it would prevent a lot of files.
                 for params in evaluated_parameters:
                     if isinstance(params, dict):

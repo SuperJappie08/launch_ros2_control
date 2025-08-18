@@ -12,7 +12,7 @@ be under the Apache 2 License, as dictated by that
    with Licensor regarding such Contributions.
 ~~~
 
-Contributors <b title="signing-off is required, however in the inital stages it has been forgotten sometimes.">must</b> sign-off each commit by adding a `Signed-off-by: ...`
+Contributors <b title="signing-off is required, however in the initial stages it has been forgotten sometimes.">must</b> sign-off each commit by adding a `Signed-off-by: ...`
 line to commit messages to certify that they have the right to submit
 the code they are contributing to the project according to the
 [Developer Certificate of Origin (DCO)](https://developercertificate.org/).

@@ -18,7 +18,7 @@
 #   Provide optional PID controllers
 #   This example has the following requirements:
 #     - launch
-#     - ros-controls/ros2_control_demos (and it's requirements), specificly
+#     - ros-controls/ros2_control_demos (and it's requirements), specifically
 #       - ros2_control_demo_example_2
 #       - ros2_control_demo_example_16
 
@@ -47,7 +47,7 @@ def generate_launch_description():
         'fixed_frame_id', default_value='odom',
         description='Fixed frame id of the robot.'))
     ld.add_action(DeclareLaunchArgument(
-        'use_pid', description="If true the PID controller for the wheels get's configured."))
+        'use_pid', description='If true the PID controller for the wheels gets configured.'))
 
     gui = LaunchConfiguration('gui')
     use_mock_hardware = LaunchConfiguration('use_mock_hardware')
@@ -95,7 +95,7 @@ def generate_launch_description():
             condition=if_use_pid),
         Controller(
             name='pid_controller_right_wheel_joint',
-            # This file can technically be ommited, since it is loaded by the previous controller
+            # This file can technically be omitted, since it is loaded by the previous controller
             parameters=[pid_controller_config_file],
             condition=if_use_pid),
         Controller(

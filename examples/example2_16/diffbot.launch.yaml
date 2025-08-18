@@ -2,7 +2,7 @@
 #   Provide optional PID controllers
 #   This example has the following requirements:
 #     - launch_yaml
-#     - ros-controls/ros2_control_demos (and it's requirements), specificly
+#     - ros-controls/ros2_control_demos (and it's requirements), specifically
 #       - ros2_control_demo_example_2
 #       - ros2_control_demo_example_16
 launch:
@@ -20,7 +20,7 @@ launch:
       description: Fixed frame id of the robot.
   - arg:
       name: use_pid
-      description: If true the PID controller for the wheels get's configured.
+      description: If true the PID controller for the wheels gets configured.
 
   - let:
       name: robot_description_content
@@ -55,7 +55,7 @@ launch:
         - name: pid_controller_right_wheel_joint
           if: $(var use_pid)
           param:
-            # This file can technically be ommited, since it is loaded by the previous controller
+            # This file can technically be omitted, since it is loaded by the previous controller
             - from: $(dirname)/diffbot_pid_controllers.yaml
         - name: diffbot_base_controller
           param:

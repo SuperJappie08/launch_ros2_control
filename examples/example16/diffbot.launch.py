@@ -17,7 +17,7 @@
 # Launch-file for ros2_control_demos Example 16
 #   This example has the following requirements:
 #     - launch
-#     - ros-controls/ros2_control_demos (and it's requirements), specificly
+#     - ros-controls/ros2_control_demos (and it's requirements), specifically
 #       - ros2_control_demo_example_16
 
 from launch import LaunchDescription
@@ -77,17 +77,17 @@ def generate_launch_description():
     ld.add_action(SpawnControllers([
         Controller(
             name='pid_controller_left_wheel_joint',
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the controller manager at startup
             parameters=[controller_config_file]),
         Controller(
             name='pid_controller_right_wheel_joint',
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the previous controller and by the controller manager at startup
             parameters=[controller_config_file]),
         Controller(
             name='diffbot_base_controller',
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the previous controller and by the controller manager at startup
             parameters=[controller_config_file],
             remappings=[('~/cmd_vel', '/cmd_vel')]),

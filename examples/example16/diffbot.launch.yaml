@@ -1,7 +1,7 @@
 # Launch-file for ros2_control_demos Example 16
 #   This example has the following requirements:
 #     - launch_yaml
-#     - ros-controls/ros2_control_demos (and it's requirements), specificly
+#     - ros-controls/ros2_control_demos (and it's requirements), specifically
 #       - ros2_control_demo_example_16
 launch:
   - arg:
@@ -47,17 +47,17 @@ launch:
       controller:
         - name: pid_controller_left_wheel_joint
           param:
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the controller manager at startup
             - from: $(var controller_config_file)
         - name: pid_controller_right_wheel_joint
           param:
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the previous controller and by the controller manager at startup
             - from: $(var controller_config_file)
         - name: diffbot_base_controller
           param:
-            # This file can technically be ommited, since it is loaded
+            # This file can technically be omitted, since it is loaded
             # by the previous controller and by the controller manager at startup
             - from: $(var controller_config_file)
           remap:

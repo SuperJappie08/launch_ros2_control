@@ -1,7 +1,7 @@
 <!-- Launch-file for ros2_control_demos Example 16 -->
 <!--    This example has the following requirements: -->
 <!--      - launch_xml -->
-<!--      - ros-controls/ros2_control_demos (and it's requirements), specificly ros2_control_demo_example_16 -->
+<!--      - ros-controls/ros2_control_demos (and it's requirements), specifically ros2_control_demo_example_16 -->
 <launch>
   <arg name="gui" default="true"
     description="Start RViz2 automatically with this launch file." />
@@ -30,18 +30,18 @@
 
   <spawn_controller>
     <controller name="pid_controller_left_wheel_joint">
-      <!-- This file can technically be ommited, since it is loaded
+      <!-- This file can technically be omitted, since it is loaded
         by the controller manager at startup -->
       <param from="$(var controller_config_file)" />
     </controller>
     <controller name="pid_controller_right_wheel_joint">
-      <!-- This file can technically be ommited, since it is loaded
+      <!-- This file can technically be omitted, since it is loaded
         by the previous controller and by the controller manager at startup -->
       <param from="$(var controller_config_file)" />
     </controller>
 
     <controller name="diffbot_base_controller">
-      <!-- This file can technically be ommited, since it is loaded
+      <!-- This file can technically be omitted, since it is loaded
         by the previous controller and by the controller manager at startup -->
       <param from="$(var controller_config_file)" />
       <remap from="~/cmd_vel" to="/cmd_vel" />

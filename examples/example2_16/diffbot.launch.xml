@@ -1,9 +1,8 @@
-
 <!-- Launch-file for ros2_control_demos Example 2 and 16 -->
 <!--   Provides optional PID controllers -->
 <!--    This example has the following requirements: -->
 <!--      - launch_xml -->
-<!--      - ros-controls/ros2_control_demos (and it's requirements), specificly: -->
+<!--      - ros-controls/ros2_control_demos (and it's requirements), specifically: -->
 <!--          - ros2_control_demo_example_2 -->
 <!--          - ros2_control_demo_example_16 -->
 <launch>
@@ -13,7 +12,7 @@
     description="Start robot with mock hardware mirroring command to its states." />
   <arg name="fixed_frame_id" default="odom"
     description="Fixed frame id of the robot." />
-  <arg name="use_pid" description="If true the PID controller for the wheels get's configured." />
+  <arg name="use_pid" description="If true the PID controller for the wheels gets configured." />
 
   <let name="robot_description_content"
     value="
@@ -38,7 +37,7 @@
       <param from="$(dirname)/diffbot_pid_controllers.yaml" />
     </controller>
     <controller name="pid_controller_right_wheel_joint" if="$(var use_pid)">
-      <!-- This file can technically be ommited, since it is loaded by the previous controller -->
+      <!-- This file can technically be omitted, since it is loaded by the previous controller -->
       <param from="$(dirname)/diffbot_pid_controllers.yaml" />
     </controller>
 
