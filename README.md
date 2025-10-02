@@ -49,8 +49,7 @@ This repo uses pre-commit, with gitlint which requires an extra hook to be insta
 ```bash
 # Install default hook and commit-msg
 pre-commit install
-pre-commit install --hook-type commit-msg
 
-# Shorted
+# Explicitly
 pre-commit install --hook-type pre-commit --hook-type commit-msg
 ```
