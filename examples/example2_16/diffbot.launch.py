@@ -29,7 +29,7 @@ from launch.substitutions import (
     Command, LaunchConfiguration,
     PathJoinSubstitution, ThisLaunchFileDir
 )
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParametersFromFile
 from launch_ros.substitutions import FindPackageShare
 from launch_ros2_control.actions import SpawnControllers
 from launch_ros2_control.descriptions import Controller
@@ -67,15 +67,17 @@ def generate_launch_description():
 
     robot_description_content = LaunchConfiguration('robot_description_content')
 
+    diffbot_controller_parameters = PathJoinSubstitution([
+        FindPackageShare('ros2_control_demo_example_2'),
+        'config',
+        'diffbot_controllers.yaml'
+    ])
+
     ld.add_action(Node(
         package='controller_manager',
         executable='ros2_control_node',
         output='both',
-        parameters=[PathJoinSubstitution([
-            FindPackageShare('ros2_control_demo_example_2'),
-            'config',
-            'diffbot_controllers.yaml'
-        ])]))
+        parameters=[diffbot_controller_parameters]))
 
     ld.add_action(Node(
         package='robot_state_publisher',
@@ -85,6 +87,9 @@ def generate_launch_description():
 
     pid_controller_config_file = PathJoinSubstitution([
         ThisLaunchFileDir(), 'diffbot_pid_controllers.yaml'])
+
+    # Use global parameters to ensure parameter overriding happens in the correct order
+    ld.add_action(SetParametersFromFile(diffbot_controller_parameters))
 
     ld.add_action(SpawnControllers([
         Controller(

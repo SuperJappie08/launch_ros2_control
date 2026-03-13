@@ -30,6 +30,8 @@
     <param name="robot_description" value="$(var robot_description_content)" />
   </node>
 
+  <!-- Use global parameters to ensure parameter overriding happens in the correct order -->
+  <set_parameters_from_file filename="$(find-pkg-share ros2_control_demo_example_2)/config/diffbot_controllers.yaml"/>
 
   <spawn_controller>
     <controller name="pid_controller_left_wheel_joint" if="$(var use_pid)">
