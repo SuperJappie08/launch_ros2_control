@@ -4,6 +4,10 @@ A launch extension for [ros2_control](control.ros.org).
 This packages provides a launch action for spawning controllers.
 It is compatible with Humble, Jazzy, Kilted and Rolling.
 
+> [!IMPORTANT]
+> This package has been upstreamed to [`ros-controls/ros2_control`](https://github.com/ros-controls/ros2_control/tree/master/launch_ros2_control).
+> This repository has been deprecated in favour of the new upstream version.
+
 Examples for the <i title="XML, YAML, and Python">3 major launch file types</i>, can be found in the [examples folder](examples/).
 
 ## <span title="XML/YAML tag">`spawn_contoller`/`spawn-controller`</span> (<span title="Internal Python Action 🐍">`SpawnControllers`</span>)
