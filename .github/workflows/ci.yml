@@ -41,6 +41,7 @@ jobs:
     needs: ament_lint
 
     strategy:
+      fail-fast: false
       matrix:
         ros_distro: [humble, jazzy, kilted, rolling]
         include:
